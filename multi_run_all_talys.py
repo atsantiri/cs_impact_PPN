@@ -6,8 +6,8 @@ import queue # imported for using queue.Empty exception
 def run_talys(i,ld,gsfE,gsfM,upbend,jlm):
     dir=f'all_talys/i_{i}'
     os.mkdir(dir)
-    os.system(f'cp talysInput/input {dir}/input')
-    os.system(f'cp talysInput/energies {dir}/energies')
+    os.system(f'cp Input/input {dir}/input')
+    os.system(f'cp Input/energies {dir}/energies')
     os.chdir(dir)
     with open('input','a') as input:
         input.write(f'ldmodel {ld}\n')
@@ -52,7 +52,7 @@ def main():
     tasks_that_are_done = Queue()
     processes = []
 
-    fOut='talysInput/combs_table.txt'
+    fOut='Input/combs_table.txt'
     with open(fOut, 'w') as file:
         file.write("i\tLD\tE1\tM1\tup\tJLM\n")
     print("i\tLD\tE1\tM1\tup\tJLM")
@@ -62,11 +62,11 @@ def main():
         os.system('rm -rf all_talys')
     os.mkdir('all_talys')
 
+    # Modify loops below based on which talys parameters will be modified. Current setup was using talys 1.96
     with open(fOut, 'a') as file:
-        for ld in range(1,3):  
+        for ld in range(1,7):  
         # for ld in range(1,7):  
-            for gsfE in range(1,2):
-            # for gsfE in range(1,10):
+            for gsfE in range(1,4):
                 for gsfM in range(1,2):
                 # for gsfM in range(1,4):
                     # for upbend in ['y','n']:
