@@ -6,5 +6,6 @@ Codes to investigate impact of cs data on final abundances using PPN
     - Decide which talys parameters will be modified to generate model cs/rate files (multi_run_all_talys.py). 
     - Run talys (locally - multithreaded) to generate directories called all_talys/i_XX and all_talys_astro/i_XX using multi_run_all_talys.py
 2. Compare data with TALYS to extract score
+    - Modify calc_likelihood_from_cs.py to point to the right talys and csData files
 3. Extract trajectories for PPN
  
