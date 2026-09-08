@@ -3,12 +3,11 @@ import pandas as pd
 from multiprocessing import Lock, Process, Queue, current_process
 import queue # imported for using queue.Empty exception
 
-
 def run_talys(i,ld,gsfE,gsfM,upbend,jlm):
-    dir=f'all_combs/i_{i}'
+    dir=f'all_talys/i_{i}'
     os.mkdir(dir)
-    os.system(f'cp input {dir}/input')
-    os.system(f'cp energies {dir}/energies')
+    os.system(f'cp talysInput/input {dir}/input')
+    os.system(f'cp talysInput/energies {dir}/energies')
     os.chdir(dir)
     with open('input','a') as input:
         input.write(f'ldmodel {ld}\n')
@@ -47,32 +46,38 @@ def do_job(tasks_to_accomplish, tasks_that_are_done):
     return True
 
 def main():
-
-
     # number_of_task = 7
     number_of_processes = 12
     tasks_to_accomplish = Queue()
     tasks_that_are_done = Queue()
     processes = []
 
-    fOut='combs_table.txt'
+    fOut='talysInput/combs_table.txt'
     with open(fOut, 'w') as file:
         file.write("i\tLD\tE1\tM1\tup\tJLM\n")
     print("i\tLD\tE1\tM1\tup\tJLM")
     i=0
+    
+    if os.path.exists('all_talys'):
+        os.system('rm -rf all_talys')
     os.mkdir('all_talys')
 
     with open(fOut, 'a') as file:
-        for ld in range(1,7):  
-            for gsfE in range(1,10):
-                for gsfM in range(1,4):
-                    for upbend in ['y','n']:
-                        for jlm in ['y','n']:
-                            file.write(f"{i}\t{ld}\t{gsfE}\t{gsfM}\t{upbend}\t{jlm}\n")
-                            print(f"{i}\t{ld}\t{gsfE}\t{gsfM}\t{upbend}\t{jlm}")
-                            task_args=(i,ld,gsfE,gsfM,upbend,jlm) 
-                            tasks_to_accomplish.put(task_args)
-                            i+=1
+        for ld in range(1,3):  
+        # for ld in range(1,7):  
+            for gsfE in range(1,2):
+            # for gsfE in range(1,10):
+                for gsfM in range(1,2):
+                # for gsfM in range(1,4):
+                    # for upbend in ['y','n']:
+                        # for jlm in ['y','n']:
+                        upbend = 'y'
+                        jlm = 'n'
+                        file.write(f"{i}\t{ld}\t{gsfE}\t{gsfM}\t{upbend}\t{jlm}\n")
+                        print(f"{i}\t{ld}\t{gsfE}\t{gsfM}\t{upbend}\t{jlm}")
+                        task_args=(i,ld,gsfE,gsfM,upbend,jlm) 
+                        tasks_to_accomplish.put(task_args)
+                        i+=1
 
     for w in range(number_of_processes):
         p = Process(target=do_job, args=(tasks_to_accomplish, tasks_that_are_done))
