@@ -1,3 +1,0 @@
-i	LD	E1	M1	up	JLM
-0	1	1	1	y	n
-1	2	1	1	y	n
