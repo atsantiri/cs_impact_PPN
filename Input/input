@@ -1,7 +1,7 @@
 projectile g 
 element pd
 mass 102
-energy 5. 25. 0.1 
+energy energies
 
 # keep empty lines below for file formatting
 
