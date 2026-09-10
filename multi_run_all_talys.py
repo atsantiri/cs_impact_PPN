@@ -64,14 +64,11 @@ def main():
 
     # Modify loops below based on which talys parameters will be modified. Current setup was using talys 1.96
     with open(fOut, 'a') as file:
-        for ld in range(1,7):  
-        # for ld in range(1,7):  
-            for gsfE in range(1,4):
-                for gsfM in range(1,2):
-                # for gsfM in range(1,4):
-                    # for upbend in ['y','n']:
+        for ld in [1,2,5,6]:  
+            for gsfE in [8,9]:
+                for gsfM in range(1,4):
+                    for upbend in ['y','n']:
                         # for jlm in ['y','n']:
-                        upbend = 'y'
                         jlm = 'n'
                         file.write(f"{i}\t{ld}\t{gsfE}\t{gsfM}\t{upbend}\t{jlm}\n")
                         print(f"{i}\t{ld}\t{gsfE}\t{gsfM}\t{upbend}\t{jlm}")

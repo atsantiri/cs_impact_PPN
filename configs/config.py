@@ -13,3 +13,4 @@ plt.rcParams['legend.fontsize'] = 17
 plt.rcParams['axes.titlesize'] = 18 
 colormap = cm.get_cmap('viridis')
 # colormap = cm.get_cmap('Blues')
+
