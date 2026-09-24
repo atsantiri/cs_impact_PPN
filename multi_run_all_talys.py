@@ -71,7 +71,7 @@ def main():
     with open(fOut, 'a') as file:
         for ld in [1,2,5,7]:                    # talys 2.2 allows ldmodelCN = 1, 2, 5, or 7
             for gsfE in range(8,14):            # talys 2.2 allows strength = 8, 9, 10, 11, 12 or 13
-                for gsfM in [3, 8, 10, 11, 12]: # talys 2.2 allows strengthM1 = 3, 8, 10, 11 or 12
+                for gsfM in [1,2,3,4,8,10,12]:  # talys 2.2 allows strengthM1 = 1, 2, 3, 4, 8, 10, or 12
                     for upbend in ['y','n']:
                         for jlm in ['y','n']:
                             file.write(f"{i}\t{ld}\t{gsfE}\t{gsfM}\t{upbend}\t{jlm}\n")

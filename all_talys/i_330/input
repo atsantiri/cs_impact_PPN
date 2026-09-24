@@ -1,0 +1,12 @@
+projectile g 
+element pd
+mass 102
+energy energies
+
+# keep empty lines below for file formatting
+
+ldmodel 5
+strength 12
+strengthM1 10
+upbend n
+jlmomp y
