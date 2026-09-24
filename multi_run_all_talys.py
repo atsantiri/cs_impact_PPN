@@ -2,12 +2,15 @@ import os
 import pandas as pd
 from multiprocessing import Lock, Process, Queue, current_process
 import queue # imported for using queue.Empty exception
+import subprocess 
 
 def run_talys(i,ld,gsfE,gsfM,upbend,jlm):
     dir=f'all_talys/i_{i}'
     os.mkdir(dir)
-    os.system(f'cp Input/input {dir}/input')
-    os.system(f'cp Input/energies {dir}/energies')
+    # os.system(f'cp Input/input {dir}/input')
+    # os.system(f'cp Input/energies {dir}/energies')
+    subprocess.run(["cp", "Input/input", f"{dir}/input"])
+    subprocess.run(["cp", "Input/energies", f"{dir}/energies"])
     os.chdir(dir)
     with open('input','a') as input:
         input.write(f'ldmodel {ld}\n')
@@ -15,7 +18,8 @@ def run_talys(i,ld,gsfE,gsfM,upbend,jlm):
         input.write(f'strengthM1 {gsfM}\n')
         input.write(f'upbend {upbend}\n')
         input.write(f'jlmomp {jlm}\n')
-    os.system('talys <input> out')
+    # os.system('talys < input > out')
+    subprocess.run(['talys'],stdin=open("input"),stdout=open("out","w"))
     os.chdir('../..')
     
 
@@ -59,22 +63,22 @@ def main():
     i=0
     
     if os.path.exists('all_talys'):
-        os.system('rm -rf all_talys')
+        subprocess.run(["rm", "-rf", "all_talys"])
+        # os.system('rm -rf all_talys')
     os.mkdir('all_talys')
 
     # Modify loops below based on which talys parameters will be modified. Current setup was using talys 1.96
     with open(fOut, 'a') as file:
-        for ld in [1,2,5,6]:  
-            for gsfE in [8,9]:
-                for gsfM in range(1,4):
+        for ld in [1,2,5,7]:                    # talys 2.2 allows ldmodelCN = 1, 2, 5, or 7
+            for gsfE in range(8,14):            # talys 2.2 allows strength = 8, 9, 10, 11, 12 or 13
+                for gsfM in [3, 8, 10, 11, 12]: # talys 2.2 allows strengthM1 = 3, 8, 10, 11 or 12
                     for upbend in ['y','n']:
-                        # for jlm in ['y','n']:
-                        jlm = 'n'
-                        file.write(f"{i}\t{ld}\t{gsfE}\t{gsfM}\t{upbend}\t{jlm}\n")
-                        print(f"{i}\t{ld}\t{gsfE}\t{gsfM}\t{upbend}\t{jlm}")
-                        task_args=(i,ld,gsfE,gsfM,upbend,jlm) 
-                        tasks_to_accomplish.put(task_args)
-                        i+=1
+                        for jlm in ['y','n']:
+                            file.write(f"{i}\t{ld}\t{gsfE}\t{gsfM}\t{upbend}\t{jlm}\n")
+                            print(f"{i}\t{ld}\t{gsfE}\t{gsfM}\t{upbend}\t{jlm}")
+                            task_args=(i,ld,gsfE,gsfM,upbend,jlm) 
+                            tasks_to_accomplish.put(task_args)
+                            i+=1
 
     for w in range(number_of_processes):
         p = Process(target=do_job, args=(tasks_to_accomplish, tasks_that_are_done))
