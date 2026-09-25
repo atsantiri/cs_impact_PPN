@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import numpy as np
 import os
 import matplotlib.pyplot as plt
@@ -36,17 +37,18 @@ def add_colorbar(param, label, axis):
 
 
 # Talys inputs
-talysDir = 'all_talys'
+talysDir = '102Pd' #'all_talys'
 runs = len(next(os.walk(talysDir))[1])
 print(f'Found {runs} talys runs')
 talysFile = 'pprod.tot'
 model_data = [
-    np.loadtxt(f'{talysDir}/i_{i}/{talysFile}', skiprows=5, usecols=[0, 1]).T
+    np.loadtxt(f'{talysDir}/i_{i}/{talysFile}', skiprows=5, usecols=[0, 1]).T # for pprod.tot - type files
+    #np.loadtxt(f'{talysDir}/i_{i}/{talysFile}', skiprows=21, usecols=[0, 1]).T 
     for i in range(runs)
 ]
 
 # Cross section Data 
-csDataFile = 'Input/cs_102Pd_gp.dat'
+csDataFile = 'Input/102Pd/cs_102Pd_gp.dat'
 ene, cs, cs_err = np.loadtxt(csDataFile,skiprows=1).T
 # For now all data points are equal. This will change when we adopt x errors
 weights = np.ones(len(cs))

@@ -10,3 +10,10 @@ Codes to investigate impact of cs data on final abundances using PPN
     - If more than one reactions, use calc_likelihood_from_cs_multiple_files.py (need better naming scheme for codes...)
 3. Extract trajectories for PPN
  
+CHLOE'S ADDITIONS (September 2026)
+ makeTalysBand_v2.C is a function which finds, from all files in folder all_talys/i_XX/Yprod.tot, the maximum and minimum cross sections from all possible model combinations used and creates a .dat file with the energy, minimum, and maximum cross section to make a TALYS 'band' for all data.
+	- will need to modify every time for the specific output file desired (i.e., 'aprod.tot' vs 'pprod.tot' vs 'gprod.tot')
+ astrorate_multi_reactions.py -- runs nearly identically to calc_likelihood_from_cs_multi_reactions.py, but I have modified it to work for a linear input (REACLIB) rather than a point-like distribution of comparison data. It uses an interpolation function rather than the helper-likelihood function used previously.
+ makeRateFile.py -- generates the REACLIB data curve from the standard 7-parameter REACLIB equation / parameters output from the database
+ 
+ I (Chloe) have also moved all datafiles from the all_talys/ and all_talys_astro/ folders created by multi_run_all_talys.py to more descriptive folder names, based on the reaction and the TALYS version used (un-referenced folders used TALYS 1.96 EXCEPT for the 102Pd_astro/ folder, which used TALYS 2.2)

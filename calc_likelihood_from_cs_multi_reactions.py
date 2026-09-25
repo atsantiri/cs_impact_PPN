@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import numpy as np
 import os
 import matplotlib.pyplot as plt
@@ -6,23 +7,23 @@ import math
 from configs import config, helpers
 
 # Inputs
-talysDir = 'all_talys'
+talysDir = '102Pd_TALYS2.2' #'all_talys'
 # runs = 2
 runs = len(next(os.walk(talysDir))[1])
 print(f'Found {runs} talys runs')
 fIn = {
     '102Pd-ga': {
         'talys': 'aprod.tot',
-        'cs': 'Input/cs_102Pd_ga.dat'
+        'cs': 'Input/102Pd/cs_102Pd_ga.dat'
     },
     '102Pd-gp': {
         'talys': 'pprod.tot',
-        'cs': 'Input/cs_102Pd_gp.dat'
+        'cs': 'Input/102Pd/cs_102Pd_gp.dat'
     }
 }
 model_data = {
     key: [
-        np.loadtxt(f'{talysDir}/i_{i}/{data['talys']}', skiprows=5, usecols=[0, 1]).T
+        np.loadtxt(f'{talysDir}/i_{i}/{data["talys"]}', skiprows=5, usecols=[0, 1]).T
         for i in range(runs)
     ]
     for key, data in fIn.items()
@@ -42,7 +43,7 @@ axs = axs.flatten()
 
 # weighting function for the energy errors
 weights = norm.pdf(np.linspace(0.985, 1.015, 11), loc=1, scale=0.03 / (2 * np.sqrt(2 * np.log(2))))
-# weights /= weights.max()
+weights /= weights.max()
 
 #loop over files:
 for d,key in enumerate(cs_data):
@@ -54,8 +55,12 @@ for d,key in enumerate(cs_data):
         model = ene_i, cs_i
         args = cs_data[key]['cs'], cs_data[key]['cs_err'], cs_data[key]['ene'], weights 
         w_m[i] = helpers.likelihood(model, args)
-        print(f'{i} {w_m[i]:.4e}')
+        # print(f'{i} {w_m[i]:.4e}')
         # plt.plot(ene_i,cs_i, color=config.colormap(w_m[i]), zorder=1)
+        
+    if np.max(w_m) > 0:
+        w_m = w_m / np.max(w_m)
+        
     cs_data[key]['w_m'] = w_m
     print(cs_data[key]['w_m'])
 
@@ -64,6 +69,14 @@ for d, (key, data) in enumerate(cs_data.items()):
     idx_sorted_w = np.argsort(data['w_m'])
     helpers.plot_sorted_data(model_data[key], idx_sorted_w, data['w_m'], axs[d])
     helpers.add_colorbar(fig, data['w_m'], 'exp(logP/Nbins*Ndata)', axs[d])
+    
+    # Add this back in to see the TALYS min and max bands plotted with the data
+#    all_cs = np.array([model_data[key][i][1] for i in range(runs)])
+#    min_band = np.min(all_cs, axis=0)
+#    max_band = np.max(all_cs, axis=0)
+#    ene_grid = model_data[key][0][0]
+#    axs[d].plot(ene_grid, min_band, color='cyan', linestyle='--', linewidth=2, label='TALYS Min')
+#    axs[d].plot(ene_grid, max_band, color='cyan', linestyle='--', linewidth=2, label='TALYS Max')
 
     axs[d].errorbar(data['ene_median'], data['cs'], xerr = data['ene_median']*0.015, yerr = data['cs_err'], label=key,fmt='o', color='black',capsize=2, zorder=10)
     axs[d].set_xlabel('Energy (MeV)')
