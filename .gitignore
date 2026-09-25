@@ -1,0 +1,5 @@
+# talys files -- these should be run locally
+all_talys/
+all_talys_astro/
+
+configs/__pycache__
