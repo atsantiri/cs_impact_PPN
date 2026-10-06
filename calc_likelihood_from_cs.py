@@ -11,14 +11,14 @@ talysDir = 'all_talys'
 runs = len(next(os.walk(talysDir))[1])
 print(f'Found {runs} talys runs')
 fIn = {
-    '102Pd-ga': {
-        'talys': 'aprod.tot',
-        'cs': 'Input/cs_102Pd_ga.dat'
-    }#,
-    # '102Pd-gp': {
-    #     'talys': 'pprod.tot',
-    #     'cs': 'Input/cs_102Pd_gp.dat'
-    # }
+    # '102Pd-ga': {
+    #     'talys': 'aprod.tot',
+    #     'cs': 'Input/cs_102Pd_ga.dat'
+    # },
+    '102Pd-gp': {
+        'talys': 'pprod.tot',
+        'cs': 'Input/cs_102Pd_gp.dat'
+    }
 }
 model_data = {
     key: [
@@ -57,7 +57,7 @@ for d,key in enumerate(cs_data):
         print(f'{i} {w_m[i]:.4e}')
         # plt.plot(ene_i,cs_i, color=config.colormap(w_m[i]), zorder=1)
     cs_data[key]['w_m'] = w_m
-    print(cs_data[key]['w_m'])
+    # print(cs_data[key]['w_m'])
 
 
 for d, (key, data) in enumerate(cs_data.items()):

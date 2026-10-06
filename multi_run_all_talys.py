@@ -7,8 +7,6 @@ import subprocess
 def run_talys(i,ld,gsfE,gsfM,upbend,jlm):
     dir=f'all_talys/i_{i}'
     os.mkdir(dir)
-    # os.system(f'cp Input/input {dir}/input')
-    # os.system(f'cp Input/energies {dir}/energies')
     subprocess.run(["cp", "Input/input", f"{dir}/input"])
     subprocess.run(["cp", "Input/energies", f"{dir}/energies"])
     os.chdir(dir)
@@ -18,7 +16,6 @@ def run_talys(i,ld,gsfE,gsfM,upbend,jlm):
         input.write(f'strengthM1 {gsfM}\n')
         input.write(f'upbend {upbend}\n')
         input.write(f'jlmomp {jlm}\n')
-    # os.system('talys < input > out')
     subprocess.run(['talys'],stdin=open("input"),stdout=open("out","w"))
     os.chdir('../..')
     
@@ -64,14 +61,13 @@ def main():
     
     if os.path.exists('all_talys'):
         subprocess.run(["rm", "-rf", "all_talys"])
-        # os.system('rm -rf all_talys')
     os.mkdir('all_talys')
 
     # Modify loops below based on which talys parameters will be modified. Current setup was using talys 1.96
     with open(fOut, 'a') as file:
-        for ld in [1,2,5,7]:                    # talys 2.2 allows ldmodelCN = 1, 2, 5, or 7
-            for gsfE in range(8,14):            # talys 2.2 allows strength = 8, 9, 10, 11, 12 or 13
-                for gsfM in [1,2,3,4,8,10,12]:  # talys 2.2 allows strengthM1 = 1, 2, 3, 4, 8, 10, or 12
+        for ld in [1,2,5,7]:                    # talys 2.2 allows ldmodel = 1, 2, 5, or 7
+            for gsfE in [8,9,10,12,13]:            # talys 2.2 allows strength = 8, 9, 10, 11, 12 or 13
+                for gsfM in [3,8,10,12]:  # talys 2.2 allows strengthM1 = 1, 2, 3, 4, 8, 10, or 12
                     for upbend in ['y','n']:
                         for jlm in ['y','n']:
                             file.write(f"{i}\t{ld}\t{gsfE}\t{gsfM}\t{upbend}\t{jlm}\n")

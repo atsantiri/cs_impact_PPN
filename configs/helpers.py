@@ -10,7 +10,6 @@ def likelihood(model, args):
     ene_i, cs_i = model 
     likelihood_val = 0
     
-    # f_mi_lookup = {ene: val for ene, val in zip(ene_i, cs_i)}
     f_mi_lookup = {e: val for e, val in zip(ene_i, cs_i)}
     for i in range(len(cs)):
         for j in range(len(ene[i])):
