@@ -13,7 +13,6 @@ def likelihood(model, args):
     f_mi_lookup = {e: val for e, val in zip(ene_i, cs_i)}
     for i in range(len(cs)):
         for j in range(len(ene[i])):
-            # f_mi = cs_i[e_eff[i] == ene_i]
             f_mi = f_mi_lookup.get(ene[i,j], None)
             if f_mi is None:
                 print(f'something is off here {f_mi} for ene {ene[j,i]}')
