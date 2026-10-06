@@ -1,53 +1,57 @@
 import os
 import pandas as pd
 from multiprocessing import Lock, Process, Queue, current_process
-import queue # imported for using queue.Empty exception
-import subprocess 
+import queue  # imported for using queue.Empty exception
+import subprocess
 
-def run_talys(i,ld,gsfE,gsfM,upbend,jlm):
-    dir=f'all_talys/i_{i}'
+
+def run_talys(i, ld, gsfE, gsfM, upbend, jlm):
+    dir = f"all_talys/i_{i}"
     os.mkdir(dir)
     # os.system(f'cp Input/input {dir}/input')
     # os.system(f'cp Input/energies {dir}/energies')
     subprocess.run(["cp", "Input/input", f"{dir}/input"])
     subprocess.run(["cp", "Input/energies", f"{dir}/energies"])
     os.chdir(dir)
-    with open('input','a') as input:
-        input.write(f'ldmodel {ld}\n')
-        input.write(f'strength {gsfE}\n')
-        input.write(f'strengthM1 {gsfM}\n')
-        input.write(f'upbend {upbend}\n')
-        input.write(f'jlmomp {jlm}\n')
+    with open("input", "a") as input:
+        input.write(f"ldmodel {ld}\n")
+        input.write(f"strength {gsfE}\n")
+        input.write(f"strengthM1 {gsfM}\n")
+        input.write(f"upbend {upbend}\n")
+        input.write(f"jlmomp {jlm}\n")
     # os.system('talys < input > out')
-    subprocess.run(['talys'],stdin=open("input"),stdout=open("out","w"))
-    os.chdir('../..')
-    
+    subprocess.run(["talys"], stdin=open("input"), stdout=open("out", "w"))
+    os.chdir("../..")
+
 
 def do_job(tasks_to_accomplish, tasks_that_are_done):
     while True:
         try:
-            '''
-                try to get task from the queue. get_nowait() function will 
-                raise queue.Empty exception if the queue is empty. 
-                queue(False) function would do the same task also.
-            '''
+            """
+            try to get task from the queue. get_nowait() function will
+            raise queue.Empty exception if the queue is empty.
+            queue(False) function would do the same task also.
+            """
             task = tasks_to_accomplish.get_nowait()
-            i,ld,gsfE,gsfM,upbend,jlm = task
-            print(f'Running task {i} at {current_process().name}')
+            i, ld, gsfE, gsfM, upbend, jlm = task
+            print(f"Running task {i} at {current_process().name}")
             run_talys(*task)
 
         except queue.Empty:
 
             break
         else:
-            '''
-                if no exception has been raised, add the task completion 
-                message to task_that_are_done queue
-            '''
-            i,ld,gsfE,gsfM,upbend,jlm = task
-            tasks_that_are_done.put('Task '+str(i) + ' is done by ' + current_process().name)
+            """
+            if no exception has been raised, add the task completion
+            message to task_that_are_done queue
+            """
+            i, ld, gsfE, gsfM, upbend, jlm = task
+            tasks_that_are_done.put(
+                "Task " + str(i) + " is done by " + current_process().name
+            )
             # time.sleep(.5)
     return True
+
 
 def main():
     # number_of_task = 7
@@ -56,34 +60,34 @@ def main():
     tasks_that_are_done = Queue()
     processes = []
 
-    fOut='Input/combs_table.txt'
-    with open(fOut, 'w') as file:
+    fOut = "Input/combs_table.txt"
+    with open(fOut, "w") as file:
         file.write("i\tLD\tE1\tM1\tup\tJLM\n")
     print("i\tLD\tE1\tM1\tup\tJLM")
-    i=0
-    
-    if os.path.exists('all_talys'):
+    i = 0
+
+    if os.path.exists("all_talys"):
         subprocess.run(["rm", "-rf", "all_talys"])
         # os.system('rm -rf all_talys')
-    os.mkdir('all_talys')
+    os.mkdir("all_talys")
 
     # Modify loops below based on which talys parameters will be modified. Current setup was using talys 1.96
-    with open(fOut, 'a') as file:
+    with open(fOut, "a") as file:
         # for ld in [1,2,5,7]:                    # talys 2.2 allows ldmodelCN = 1, 2, 5, or 7
         #     for gsfE in range(8,14):            # talys 2.2 allows strength = 8, 9, 10, 11, 12 or 13
         #         for gsfM in [1,2,3,4,8,10,12]:  # talys 2.2 allows strengthM1 = 1, 2, 3, 4, 8, 10, or 12
         #             for upbend in ['y','n']:
         #                 for jlm in ['y','n']:
-        for ld in range(1,7):                     # talys 1.96
-            for gsfE in range(1,10):              # talys 1.96
-                for gsfM in range(1,4):           # talys 1.96
-                    for upbend in ['y','n']:
-                        for jlm in ['y','n']:
+        for ld in range(1, 7):  # talys 1.96
+            for gsfE in range(1, 10):  # talys 1.96
+                for gsfM in range(1, 4):  # talys 1.96
+                    for upbend in ["y", "n"]:
+                        for jlm in ["y", "n"]:
                             file.write(f"{i}\t{ld}\t{gsfE}\t{gsfM}\t{upbend}\t{jlm}\n")
                             print(f"{i}\t{ld}\t{gsfE}\t{gsfM}\t{upbend}\t{jlm}")
-                            task_args=(i,ld,gsfE,gsfM,upbend,jlm) 
+                            task_args = (i, ld, gsfE, gsfM, upbend, jlm)
                             tasks_to_accomplish.put(task_args)
-                            i+=1
+                            i += 1
 
     for w in range(number_of_processes):
         p = Process(target=do_job, args=(tasks_to_accomplish, tasks_that_are_done))
@@ -100,5 +104,6 @@ def main():
 
     return True
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
