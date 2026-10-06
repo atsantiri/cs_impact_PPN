@@ -11,10 +11,10 @@ talysDir = 'all_talys'
 runs = len(next(os.walk(talysDir))[1])
 print(f'Found {runs} talys runs')
 fIn = {
-    # '102Pd-ga': {
-    #     'talys': 'aprod.tot',
-    #     'cs': 'Input/cs_102Pd_ga.dat'
-    # },
+    '102Pd-ga': {
+        'talys': 'aprod.tot',
+        'cs': 'Input/cs_102Pd_ga.dat'
+    },
     '102Pd-gp': {
         'talys': 'pprod.tot',
         'cs': 'Input/cs_102Pd_gp.dat'
@@ -46,19 +46,28 @@ weights = norm.pdf(np.linspace(0.985, 1.015, 11), loc=1, scale=0.03 / (2 * np.sq
 
 #loop over files:
 for d,key in enumerate(cs_data):
+    data = cs_data[key]
+    models = model_data[key]
+    
     # init likelihood array
     w_m = np.zeros(runs)
 
-    for i in range(runs):
-        ene_i, cs_i = model_data[key][i]
-        model = ene_i, cs_i
-        args = cs_data[key]['cs'], cs_data[key]['cs_err'], cs_data[key]['ene'], weights 
+    args = (data['cs'], data['cs_err'], data['ene'], weights) 
+
+    for i, model in enumerate(models):
         w_m[i] = helpers.likelihood(model, args)
         print(f'{i} {w_m[i]:.4e}')
-        # plt.plot(ene_i,cs_i, color=config.colormap(w_m[i]), zorder=1)
-    cs_data[key]['w_m'] = w_m
-    # print(cs_data[key]['w_m'])
 
+    data['w_m'] = w_m
+
+    # Min/max TALYS
+    energy = models[0][0]
+    xs = np.array([model[1] for model in models])
+    min_xs = xs.min(axis=0)
+    max_xs = xs.max(axis=0)
+    axs[d].plot(energy, min_xs, '--',color='steelblue', label=f'Min/Max TALYS',zorder=10)
+    axs[d].plot(energy, max_xs, '--', color='steelblue',zorder=10)
+   
 
 for d, (key, data) in enumerate(cs_data.items()):
     idx_sorted_w = np.argsort(data['w_m'])
@@ -71,7 +80,9 @@ for d, (key, data) in enumerate(cs_data.items()):
     axs[d].set_yscale('log')
     axs[d].set_ylim(min(data['cs'])/2,max(data['cs'])*2)
     axs[d].set_ylabel('Cross Section (mb)')
-    axs[d].legend()
+    axs[d].legend(loc='lower right')
+
+
 
 # plt.tight_layout()
 plt.show()

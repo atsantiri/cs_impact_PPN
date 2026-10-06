@@ -11,6 +11,6 @@ plt.rcParams['xtick.labelsize'] = 15
 plt.rcParams['ytick.labelsize'] = 15 
 plt.rcParams['legend.fontsize'] = 17 
 plt.rcParams['axes.titlesize'] = 18 
-colormap = cm.get_cmap('viridis')
-# colormap = cm.get_cmap('Blues')
+# colormap = cm.get_cmap('viridis')
+colormap = cm.get_cmap('Blues')
 
