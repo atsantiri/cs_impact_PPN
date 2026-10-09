@@ -34,34 +34,6 @@ def run_talys(i, ld, gsfE, gsfM, upbend, jlm, alpha, prot, talysDir):
     subprocess.run(["talys"], stdin=open("input"), stdout=open("out", "w"))
     os.chdir("../..")
 
-
-# def do_job(tasks_to_accomplish, tasks_that_are_done):
-#     while True:
-#         try:
-#             """
-#             try to get task from the queue. get_nowait() function will
-#             raise queue.Empty exception if the queue is empty.
-#             queue(False) function would do the same task also.
-#             """
-#             task = tasks_to_accomplish.get_nowait()
-#             i, *_ = task
-#             print(f"Running task {i} at {current_process().name}")
-#             run_talys(*task)
-
-#         except queue.Empty:
-
-
-#             break
-#         else:
-#             """
-#             if no exception has been raised, add the task completion
-#             message to task_that_are_done queue
-#             """
-#             i, *_ = task
-#             tasks_that_are_done.put(
-#                 "Task " + str(i) + " is done by " + current_process().name
-#             )
-#     return True
 def do_job(tasks_to_accomplish, tasks_that_are_done):
     while True:
         try:
