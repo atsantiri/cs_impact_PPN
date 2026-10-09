@@ -23,5 +23,5 @@ params_gp = np.array([67.505,-90.589,-53.7127,0.464325,-1.02956,0.0210821,0.8333
 params_ga = np.array([103.172,-24.6656,-131.689,1.94196,-1.88896,0.000853814,0.833333]) # pd102(g,a)
 
 # Save to .dat files matching your script's input path
-np.savetxt('Input/102Pd/reaclib_102Pd_gp.dat', np.column_stack([T9_grid, reaclib_rate(T9_grid, params_gp)]))
-np.savetxt('Input/102Pd/reaclib_102Pd_ga.dat', np.column_stack([T9_grid, reaclib_rate(T9_grid, params_ga)]))
+np.savetxt('Input/reaclib_102Pd_gp.dat', np.column_stack([T9_grid, reaclib_rate(T9_grid, params_gp)]))
+np.savetxt('Input/reaclib_102Pd_ga.dat', np.column_stack([T9_grid, reaclib_rate(T9_grid, params_ga)]))

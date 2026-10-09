@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from configs import config
 
-
 # helper functions
 def likelihood(model, args):
     cs, cs_err, ene, weights = args
@@ -22,7 +21,6 @@ def likelihood(model, args):
         likelihood_val / len(weights) / len(cs)
     )  # note that here I normalize on number of bins per energy, as well as number of energies per dataset
 
-
 def plot_sorted_data(data, index, param, axis):
     norm = plt.Normalize(min(param), max(param))
     for i in index:
@@ -30,12 +28,10 @@ def plot_sorted_data(data, index, param, axis):
         color = config.colormap(norm(param[i]))
         axis.plot(ene_i, cs_i, color=color)
 
-
 def add_colorbar(fig, param, label, axis):
     norm = plt.Normalize(min(param), max(param))
     sm = plt.cm.ScalarMappable(cmap=config.colormap, norm=norm)
     fig.colorbar(sm, ax=axis, label=label)
-
 
 def read_cs(file):
     ene_median, cs, cs_err = np.loadtxt(file, skiprows=1).T
