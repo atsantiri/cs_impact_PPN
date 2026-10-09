@@ -5,7 +5,6 @@ from scipy.stats import norm
 import math
 from configs import config, helpers
 
-
 def setup_fig(cs_data):
     # Setup plots
     n = len(cs_data)
@@ -51,12 +50,14 @@ def plot_min_max_talys(fig, axs, model_data):
 
 
 def main():
-    # Inputs
-    talysDir = "all_talys"
-    # talysDir = "all_talys_102pd"
+
+    # Read Inputs
+    talysDir = "all_talys_102pd"
     runs = 100
     # runs = len(next(os.walk(talysDir))[1])
     print(f"Found {runs} talys runs")
+
+    # Add reactions and pathfiles as needed
     fIn = {
         "102Pd-ga": {"reaction": "aprod", "cs": "Input/cs_102Pd_ga.dat"},
         "102Pd-gp": {"reaction": "pprod", "cs": "Input/cs_102Pd_gp.dat"},
@@ -70,16 +71,21 @@ def main():
     }
     cs_data = {key: helpers.read_cs(file["cs"]) for key, file in fIn.items()}
 
+    # Setup plots based on number of reactions
     fig, axs = setup_fig(cs_data)
+
+    # Plot input data
     plot_cs(cs_data, fig, axs)
 
+    # Plot the edges of the talys band
+    plot_min_max_talys(fig, axs, model_data)
+
+    # DO DA THANG
+    
     # weighting function for the energy errors
     weights = norm.pdf(
         np.linspace(0.985, 1.015, 11), loc=1, scale=0.03 / (2 * np.sqrt(2 * np.log(2)))
     )
-
-    plot_min_max_talys(fig, axs, model_data)
-
     #
     # loop over files:
     for d, key in enumerate(cs_data):
@@ -96,7 +102,6 @@ def main():
             # print(f"{i} {w_m[i]:.4e}")
 
         data["w_m"] = w_m
-
 
     for d, (key, data) in enumerate(cs_data.items()):
         idx_sorted_w = np.argsort(data["w_m"])
