@@ -51,7 +51,7 @@ def do_job(tasks_to_accomplish, tasks_that_are_done):
 
 
 def main():
-    number_of_processes = 12
+    number_of_processes = 12 # number of threads to use. If you're unsure how many threads your CPU has, open a terminal and type: nproc
     tasks_to_accomplish = Queue()
     tasks_that_are_done = Queue()
     processes = []

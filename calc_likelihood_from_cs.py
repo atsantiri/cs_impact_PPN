@@ -7,8 +7,8 @@ from configs import config, helpers
 
 # Inputs
 talysDir = "all_talys_102pd"
-# runs = 2
-runs = len(next(os.walk(talysDir))[1])
+runs = 100
+# runs = len(next(os.walk(talysDir))[1])
 print(f"Found {runs} talys runs")
 fIn = {
     "102Pd-ga": {"talys": "aprod.tot", "cs": "Input/cs_102Pd_ga.dat"},
@@ -16,7 +16,7 @@ fIn = {
 }
 model_data = {
     key: [
-        np.loadtxt(f"{talysDir}/i_{i}/{data['talys']}", skiprows=5, usecols=[0, 1]).T
+        np.loadtxt(f"{talysDir}/i_{i}/{data['talys']}", usecols=[0, 1]).T
         for i in range(runs)
     ]
     for key, data in fIn.items()
@@ -47,7 +47,7 @@ for d, key in enumerate(cs_data):
 
     for i, model in enumerate(models):
         w_m[i] = helpers.likelihood(model, args)
-        print(f"{i} {w_m[i]:.4e}")
+        # print(f"{i} {w_m[i]:.4e}")
 
     data["w_m"] = w_m
 
