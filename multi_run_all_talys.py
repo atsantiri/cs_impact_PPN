@@ -59,7 +59,6 @@ def main():
     fOut = "Input/combs_table.txt"
     with open(fOut, "w") as file:
         file.write("i\tLD\tE1\tM1\tup\tJLM\talphaOMP\tlocalOMP\n")
-    print("i\tLD\tE1\tM1\tup\tJLM\talphaOMP\tlocalOMP")
     i = 0
 
     with open("./Input/input") as f:
@@ -90,7 +89,7 @@ def main():
                                     tasks_to_accomplish.put(task_args)
                                     i += 1
     print(
-        f"==============================================================================================================\n Will execute a total of {i} talys runs in {number_of_processes} threads. Patience...\n =============================================================================================================="
+        f"==============================================================================================================\n Will execute a total of {i} talys runs in {number_of_processes} threads for {mass}{el}. Patience...\n =============================================================================================================="
     )
     for w in range(number_of_processes):
         p = Process(target=do_job, args=(tasks_to_accomplish, tasks_that_are_done))
