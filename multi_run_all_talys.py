@@ -88,25 +88,18 @@ def main():
 
     # Modify loops below based on which talys parameters will be modified. Currently set up for TALYS2.2
     with open(fOut, "a") as file:
-        # for ld in [1,2,5,7]:
-        #     for alpha in [1,2,5,6,7,8]:
-        #     	for prot in ['y','n']:
-        #             for gsfE in [8,9,10,12,13]:
-        #             	for gsfM in [3,8,10,12]:
-        #                     for upbend in ['y','n']:
-        #               	        for jlm in ['y','n']:
-        for ld in [1, 2, 5, 7]:
-            alpha = 1
-            prot = "y"
-            gsfE = 8
-            gsfM = 3
-            upbend = "y"
-            jlm = "n"
-            file.write(f"{i}\t{ld}\t{gsfE}\t{gsfM}\t{upbend}\t{jlm}\t{alpha}\t{prot}\n")
-            print(f"{i}\t{ld}\t{gsfE}\t{gsfM}\t{upbend}\t{jlm}\t{alpha}\t{prot}")
-            task_args = (i, ld, gsfE, gsfM, upbend, jlm, alpha, prot, talysDir)
-            tasks_to_accomplish.put(task_args)
-            i += 1
+        for ld in [1,2,5,7]:
+            for alpha in [1,2,5,6,7,8]:
+            	for prot in ['y','n']:
+                    for gsfE in [8,9,10,12,13]:
+                    	for gsfM in [3,8,10,12]:
+                            for upbend in ['y','n']:
+                      	        for jlm in ['y','n']:
+                                    file.write(f"{i}\t{ld}\t{gsfE}\t{gsfM}\t{upbend}\t{jlm}\t{alpha}\t{prot}\n")
+                                    print(f"{i}\t{ld}\t{gsfE}\t{gsfM}\t{upbend}\t{jlm}\t{alpha}\t{prot}")
+                                    task_args = (i, ld, gsfE, gsfM, upbend, jlm, alpha, prot, talysDir)
+                                    tasks_to_accomplish.put(task_args)
+                                    i += 1
 
     for w in range(number_of_processes):
         p = Process(target=do_job, args=(tasks_to_accomplish, tasks_that_are_done))
