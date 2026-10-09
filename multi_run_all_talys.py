@@ -4,12 +4,13 @@ import pandas as pd
 from multiprocessing import Lock, Process, Queue, current_process
 import queue # imported for using queue.Empty exception
 
-### CURRENTLY FORMATTED FOR RUNNING TALYS2.2! 
-os.environ["TALYS_DIR"] = "/users/cjones38/TALYS2.2/talys" # comment out when NOT using TALYS2.2 (and instead load the proper module you want, i.e. 'module load talys/1.96')
+### CURRENTLY FORMATTED FOR RUNNING TALYS2.2!
+# I have multiple different folders for different TALYS versions on my space, so they need to be interchanged directly with the filepath below
+os.environ["TALYS_DIR"] = "/users/cjones38/TALYS2.2/talys" # replace with your path to the TALYS2.2 executable
 ROOT_DIR = os.getcwd()
 
-def run_talys(i,ld,gsfE,gsfM,upbend,jlm,alpha):#prot):
-    dir = os.path.join(ROOT_DIR, f"all_talys_astro/i_{i}")
+def run_talys(i,ld,gsfE,gsfM,upbend,jlm,alpha,prot):
+    dir = os.path.join(ROOT_DIR, f"all_talys/i_{i}")#f"all_talys__astro/i_{i}")
     os.makedirs(dir, exist_ok=True)
     #dir=f'all_talys/i_{i}'
     #os.mkdir(dir)
@@ -22,15 +23,15 @@ def run_talys(i,ld,gsfE,gsfM,upbend,jlm,alpha):#prot):
         input.write(f'strengthM1 {gsfM}\n')
         input.write(f'upbend {upbend}\n')
         input.write(f'jlmomp {jlm}\n')
-        input.write(f'legacy y\n')  # needs to be on for talys v 2.2
-        #input.write(f'localomp {prot}\n')
+        input.write(f'legacy y\n')  # needs to be on for talys v 2.2; could be a choice of y or n, in which case the ranges for models below will most likely need to be expanded
+        input.write(f'localomp {prot}\n')
         input.write(f'alphaomp {alpha}\n')
-        input.write(f'astro y\n')  # this flag needs to be on for the astrorate files to generate
-# uncomment the following two lines in using any other TALYS module that is already available on the CRC
+        #input.write(f'astro y\n')  # this flag needs to be on for the astrorate files to generate
 #    os.system('talys <input> out') 
 #    os.chdir('../..')
-# referencing TALYS v2.2 executable via its relative path to the new directory, all_talys
-    os.system("export TALYS_DIR=/users/cjones38/TALYS2.2/talys; " "/users/cjones38/TALYS2.2/talys/bin/talys < input > out")
+# referencing TALYS v2.2 executable via its relative path defined above to the new directory, all_talys
+    #os.system("export TALYS_DIR=/users/cjones38/TALYS2.2/talys; " "/users/cjones38/TALYS2.2/talys/bin/talys < input > out")
+    os.system(f'"{os.environ["TALYS_DIR"]}/bin/talys" < input > out')
     os.chdir(ROOT_DIR)
 
 def do_job(tasks_to_accomplish, tasks_that_are_done):
@@ -42,7 +43,7 @@ def do_job(tasks_to_accomplish, tasks_that_are_done):
                 queue(False) function would do the same task also.
             '''
             task = tasks_to_accomplish.get_nowait()
-            i,ld,gsfE,gsfM,upbend,jlm,alpha = task
+            i,ld,gsfE,gsfM,upbend,jlm,alpha,prot = task
             print(f'Running task {i} at {current_process().name}')
             run_talys(*task)
 
@@ -54,7 +55,7 @@ def do_job(tasks_to_accomplish, tasks_that_are_done):
                 if no exception has been raised, add the task completion 
                 message to task_that_are_done queue
             '''
-            i,ld,gsfE,gsfM,upbend,jlm,alpha = task
+            i,ld,gsfE,gsfM,upbend,jlm,alpha,prot = task
             tasks_that_are_done.put('Task '+str(i) + ' is done by ' + current_process().name)
             # time.sleep(.5)
     return True
@@ -68,28 +69,28 @@ def main():
 
     fOut='Input/combs_table.txt'
     with open(fOut, 'w') as file:
-        file.write("i\tLD\tE1\tM1\tup\tJLM\talphaOMP\n")
-    print("i\tLD\tE1\tM1\tup\tJLM\talphaOMP")
+        file.write("i\tLD\tE1\tM1\tup\tJLM\talphaOMP\tlocalOMP\n")
+    print("i\tLD\tE1\tM1\tup\tJLM\talphaOMP\tlocalOMP")
     i=0
     
-    if os.path.exists('all_talys_astro'):
-        os.system('rm -rf all_talys_astro')
-    os.mkdir('all_talys_astro')
+    if os.path.exists('all_talys'):#_astro'):
+        os.system('rm -rf all_talys')#_astro')
+    os.mkdir('all_talys')#_astro')
 
-    # Modify loops below based on which talys parameters will be modified. Current setup was using talys 1.96
+    # Modify loops below based on which talys parameters will be modified. Currently set up for TALYS2.2
     with open(fOut, 'a') as file:
-        for ld in [1,2,4,5,6]:
-            for alpha in [3,4,5,6]:
-                for gsfE in [8,9]:
-                    for gsfM in range(1,4):
-                        for upbend in ['y','n']:
-                        # for jlm in ['y','n']:
-                            jlm = 'n'
-                            file.write(f"{i}\t{ld}\t{gsfE}\t{gsfM}\t{upbend}\t{jlm}\t{alpha}\n")
-                            print(f"{i}\t{ld}\t{gsfE}\t{gsfM}\t{upbend}\t{jlm}\t{alpha}")
-                            task_args=(i,ld,gsfE,gsfM,upbend,jlm,alpha) 
-                            tasks_to_accomplish.put(task_args)
-                            i+=1
+        for ld in [1,2,5,7]:#[1,2,4,5,6] for TALYS1.96
+            for alpha in [1,2,5,6,7,8]:#[3,4,5,6] for TALYS 1.96
+            	for prot in ['y','n']:
+                    for gsfE in [8,9]:
+                    	for gsfM in range(1,4):
+                            for upbend in ['y','n']:
+                      	        for jlm in ['y','n']:#was previously hardcoded as 'n' for TALYS1.96
+                            	    file.write(f"{i}\t{ld}\t{gsfE}\t{gsfM}\t{upbend}\t{jlm}\t{alpha}\t{prot}\n")
+                            	    print(f"{i}\t{ld}\t{gsfE}\t{gsfM}\t{upbend}\t{jlm}\t{alpha}\t{prot}")
+                            	    task_args=(i,ld,gsfE,gsfM,upbend,jlm,alpha,prot) 
+                            	    tasks_to_accomplish.put(task_args)
+                            	    i+=1
 
     for w in range(number_of_processes):
         p = Process(target=do_job, args=(tasks_to_accomplish, tasks_that_are_done))
