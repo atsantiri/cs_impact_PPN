@@ -1,5 +1,6 @@
 # talys files -- these should be run locally
 all_talys*
 
+__pycache__
 configs/__pycache__
 Input/combs_table.txt
