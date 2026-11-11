@@ -2,28 +2,38 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 from scipy.stats import norm
+from scipy.special import logsumexp
 from configs import config
 
-
 # helper functions
+
+
+# likelihood adapted from Practical Bayes example of 2023 FRIB TA Summer school,
+# https://github.com/ascsn/2023-FRIB-TA-Summer-School/blob/main/practical-bayes/Practical%20example.ipynb
+# for data with uncertainty on the x axis
 def likelihood(model, args):
     cs, cs_err, ene, weights = args
     ene_i, cs_i = model
-    likelihood_val = 0
+    likelihood_log_val = 0
 
-    f_mi_lookup = {e: val for e, val in zip(ene_i, cs_i)}
+    f_mi_lookup = {e: val for e, val in zip(ene_i, cs_i)}  # parse the model data
     for i in range(len(cs)):
+        log_terms = [] 
         for j in range(len(ene[i])):
+            # find the talys cs for specific energy
             f_mi = f_mi_lookup.get(ene[i, j], None)
+            # if energy doesn't exist in talys, interpolate
             if f_mi is None:
                 f_mi = interp_cs(ene[i, j], ene_i, cs_i)
                 # print(f"something is off here {f_mi} for ene {ene[j,i]}")
                 # break
+
+            # Calculate P(y_mi)
             p_ymi = -1 / 2 * ((cs[i] - f_mi) / cs_err[i]) ** 2
-            likelihood_val += weights[j] * p_ymi
-    # return np.exp(likelihood_val / len(weights) / len(cs))  # note that here I normalize on number of bins per energy, as well as number of energies per dataset
-    return likelihood_val
-    # return np.log(np.exp(likelihood_val))
+            likelihood_log_val += weights[j] * p_ymi    
+
+    # return likelihood_log_val
+    return np.exp(likelihood_log_val)
 
 
 # instead of the likelihood function to throw an error if the energy of the cs data doesn't exist in the energies that talys was run, it'll interpolate the talys cs. Now it will throw error when it can't interpolate (I'm not adding extrapolations).
@@ -111,8 +121,8 @@ def plot_min_max_talys(fig, axs, model_data):
 
 def make_weights_for_energy_errors(n=11, half_width=0.015, fwhm=0.03):
     sigma = fwhm / (2 * np.sqrt(2 * np.log(2)))
-    w=norm.pdf(np.linspace(1 - half_width, 1 + half_width, n), loc=1, scale=sigma)
-    return w/w.sum()
+    w = norm.pdf(np.linspace(1 - half_width, 1 + half_width, n), loc=1, scale=sigma)
+    return w / w.sum()
 
 
 def calc_likelihoods(cs_data, model_data, weights=None):
